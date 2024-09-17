@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from .models import Question, Choice
 from django.template import loader
 
@@ -12,7 +12,12 @@ def index(request):
     return render(request, 'index.html', context)
 
 def details(request, question_id):
-    return HttpResponse("Your are looking at question %s."% question_id)
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("Question does not exist")
+    return render(request, 'detail.html', {'question':question})
+
 
 def result(request, question_id):
     response = "You are looking at results of question %s"
